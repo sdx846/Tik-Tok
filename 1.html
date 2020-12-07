@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>vue3.0</title>
+    <!-- 引入3.0 -->
+    <script src="https://unpkg.com/vue@next"></script>
+  </head>
+  <body>
+    <div id="app">
+      <p>{{msg}}</p>
+      <button-btn></button-btn>
+    </div>
+    <script>
+      const {reactive,computed} = Vue;
+      const CountApp={
+        data(){
+          return{
+            msg:'lili',
+            count:0
+          }
+        },
+        mounted(){
+
+        },
+      };
+      const app=Vue.createApp(CountApp);
+      //全局组件声明2.0
+      // app.component('button-btn',{
+      //   data(){
+      //     return{
+      //       count:0
+      //     }
+      //   },
+      //   template:'<button @click="count++">{{count}}</button>',
+      // });
+      //全局组件3.0
+      app.component('button-btn',{
+        //vue3.0的compositionApi入口是setup函数
+        setup(){
+          //包装响应式数据
+          const state=reactive({
+            count:0,
+            double:computed(()=>state.count*2)
+          });
+          function increment(){
+            state.count++
+          }
+          // watch(()=>{
+          //   console.log(state.double);
+          // });
+          //一定要有返回值
+          return {
+            state,
+            increment
+          }
+        },
+        template:'<div>{{state.count}}===>{{state.double}}</div><button @click="increment">增加</button>'
+      });
+      app.mount('#app');
+    </script>
+  </body>
+</html>

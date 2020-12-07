@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+  <title>抖音</title>
+  <!-- 引入3.0 -->
+  <script src="https://unpkg.com/vue@next"></script>
+  <!-- swiper.com.cn -->
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+  <link rel="stylesheet" href="./static/douyin.css">
+  <script src='./static/rem.js'></script>
+</head>
+
+<body>
+  <div id="app">
+    <div class="swiper-container">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide" v-for="v in videos" @click="playClick(v.id)">
+          <!-- 播放按钮 -->
+          <img v-show="!v.playing" class="play-btn" src="./static/img/play.png">
+          <div class="aside-rt">
+            <!-- 头像 -->
+            <img :src="v.author" class="author">
+            <!-- 点赞的数量 -->
+            <img class="heart-icon" src="./static/img/heart.png">
+            <div class="like-num">{{v.likenum}}</div>
+          </div>
+          <video class="video" x5-video-player-fullscreen='true' webkit-playsinline="true" x-webkit-airplay="true"
+            playsinline="true" x5-playsinline :id="'v-'+v.id" :poster="v.poster" :src="v.videoUrl"></video>
+        </div>
+      </div>
+    </div>
+    <!-- 底部导航栏 -->
+    <footer class='footer'>
+      <span class='footer-text'>首页</span>
+      <span class='footer-text'>朋友</span>
+      <span><img src="./static/img/3.png" class="footer-img"></span>
+      <span class='footer-text'>消息</span>
+      <span class='footer-text'>我</span>
+    </footer>
+  </div>
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"> </script>
+  <script src="./static/data.js"></script>
+  <script>
+    const app = {
+      data() {
+        return {
+          videos: VIDEOS,
+          lastIndex: 0,
+          currentIndex: 0,
+        }
+      },
+      mounted() {
+        let that = this;
+        const mySwiper = new Swiper('.swiper-container', {
+          direction: 'vertical', //垂直切换选项
+          on: {
+            //上滑动结束
+            slideChangeTransitionEnd: function () {
+              that.lastIndex = that.currentIndex;
+              that.currentIndex = this.activeIndex;
+              that.switchVideo();
+            }
+          }
+        });
+      },
+      methods: {
+        //点击播放
+        playClick(id) {
+          this.videos.forEach(v => {
+            if (v.id === id) {
+              // document.querySelector('#v-'+id).play();
+              //点击暂停
+              if (v.playing) {
+                v.playing = false;
+                document.querySelector('#v-' + id).pause();
+              } else {
+                v.playing = true;
+                document.querySelector('#v-' + id).play();
+              }
+            }
+          });
+        },
+        //判断当前视频
+        switchVideo() {
+          document.querySelector('#v-' + this.lastIndex).pause();
+          document.querySelector('#v-' + this.currentIndex).play();
+          //修改播放状态
+          this.videos.forEach(v => {
+            if (v.id === this.lastIndex) {
+              v.playing = false;
+            } else if (v.id === this.currentIndex) {
+              v.playing = true;
+            }
+          });
+        }
+
+      },
+    };
+    Vue.createApp(app).mount('#app');
+  </script>
+
+</body>
+
+</html>
